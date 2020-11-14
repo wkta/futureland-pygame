@@ -1,4 +1,5 @@
 import coremon_main as enjin
+import glvars
 from coremon_main import EventReceiver, EngineEvTypes
 import pygame
 
@@ -21,17 +22,63 @@ class WorldView(EventReceiver):
 
     BG_COLOR = (85, 33, 55)
 
-    def __init__(self, player, cam):
+    def __init__(self, player, cam, etm_obj):
         super().__init__()
         self._player_mod = player
         self._cam = cam
         self._ft = pygame.font.Font(None, 38)
+        self._etm_obj = etm_obj
 
     def _drawlarge_sq_screen(self, wlandmarks):
         scr_landmark = list()
         for lan in wlandmarks:
             scr_landmark.append(self._cam.to_screen_coords(*lan))
         pygame.draw.polygon(enjin.screen, (5, 88, 5), scr_landmark, 2)
+
+    @staticmethod
+    def colorcode_to_rgb(cc):
+        # exemple: cc peut être 3748067
+        ch = bin(cc)[2:]
+
+        # normalise longueur seq bits -> 24
+        if len(ch) <= 3*8:
+            x = ch.zfill(3*8)
+        elif cc > 16777215:  # soit 24 digits 1 en binaire...
+            x = bin(16777215)[2:]
+
+        # decoupage & conversion vers int
+        bi_r = x[16:]
+        bi_g = x[8:16]
+        bi_b = x[:8]
+
+        # t = list(bi_b)
+        # t[6] = '0'
+        # t[7] = '0'
+        # bi_b = ''.join(t)
+
+        r, g, b = int(bi_r, 2)//2, int(bi_g, 2), int(bi_b, 2)
+        if b > g:
+            tmp = g
+            g = b
+            b = tmp
+
+        # contrast reduction
+        r /= 1.25
+        g /= 1.33
+        b /= 1.5
+
+        return int(r), int(g), int(b)
+
+    def draw_tile(self, ij_coords, colorcode):
+        tsize = 59  # px
+
+        xscr, yscr = self._cam.to_screen_coords(ij_coords[0]*60, ij_coords[1]*60)
+        pygame.draw.rect(
+            enjin.screen,
+            WorldView.colorcode_to_rgb(colorcode),
+            (xscr, yscr, tsize, tsize),
+            0
+        )
 
     def proc_event(self, ev, source):
         if ev.type == EngineEvTypes.PAINT:
@@ -42,7 +89,14 @@ class WorldView(EventReceiver):
             for world_landmarks in possib_wlandmarks:
                 self._drawlarge_sq_screen(world_landmarks)
 
-            # -- Even more DIRTY DEBUG infos ---
+            # affiche couleurs (tuiles) par-dessus large squares
+            mw, mh = self._etm_obj.get_size()
+            i, j = self._player_mod.get_pos()
+            for w in range(mw):
+                for h in range(mh):
+                    self.draw_tile((w, h), self._etm_obj[(w, h)])
+
+            # -- Even more DIRTY DEBUG infos in overlay... ---
             pl_pos_txt = 'player '+str(self._player_mod.get_pos())
             cam_pos_txt = 'camera '+str(self._cam.get_pos())
             labels = [

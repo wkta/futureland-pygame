@@ -6,6 +6,7 @@ import coremon_main
 import glvars
 from coremon_main.runners import VanillaGameCtrl
 from datamodel.Camera import Camera
+from datamodel.ElasticTilemap import ElasticTilemap
 from datamodel.Player import Player
 from game_gui.Avatar import Avatar
 from game_gui.GameKeybControls import GameKeybControls
@@ -33,9 +34,10 @@ coremon_main.init(glvars.SCR_SIZE, glvars.SOFTWARE_LBL)
 # - creating a data model
 player = Player()
 cam = Camera()
+etm_obj = ElasticTilemap(player.get_pos())
 
 # - what user will see and do...
-v = WorldView(player, cam)
+v = WorldView(player, cam, etm_obj)
 vp = Avatar(player, cam)
 
 pcontrols = GameKeybControls(player, cam)
