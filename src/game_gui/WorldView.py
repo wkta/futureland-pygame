@@ -1,8 +1,7 @@
-import coremon_main as enjin
+import katagames_engine as kengi
 import glvars
-from coremon_main import EventReceiver, EngineEvTypes
-import pygame
-
+pygame = kengi.pygame
+EngineEvTypes = kengi.event.EngineEvTypes
 
 k = 180
 possib_wlandmarks = [
@@ -17,8 +16,10 @@ possib_wlandmarks = [
     [(0, 2*k), (-2*k, 0), (-2*k, 2*k)],  # de S vers W
 ]
 
+Receiver = kengi.event.EventReceiver
 
-class WorldView(EventReceiver):
+
+class WorldView(Receiver):
 
     BG_COLOR = (85, 33, 55)
 
@@ -33,7 +34,7 @@ class WorldView(EventReceiver):
         scr_landmark = list()
         for lan in wlandmarks:
             scr_landmark.append(self._cam.to_screen_coords(*lan))
-        pygame.draw.polygon(enjin.screen, (5, 88, 5), scr_landmark, 2)
+        pygame.draw.polygon(kengi.get_surface(), (5, 88, 5), scr_landmark, 2)
 
     @staticmethod
     def colorcode_to_rgb(cc):
@@ -74,7 +75,7 @@ class WorldView(EventReceiver):
 
         xscr, yscr = self._cam.to_screen_coords(ij_coords[0]*60, ij_coords[1]*60)
         pygame.draw.rect(
-            enjin.screen,
+            kengi.get_surface(),
             WorldView.colorcode_to_rgb(colorcode),
             (xscr, yscr, tsize, tsize),
             0
@@ -82,7 +83,7 @@ class WorldView(EventReceiver):
 
     def proc_event(self, ev, source):
         if ev.type == EngineEvTypes.PAINT:
-            enjin.screen.fill(self.BG_COLOR)
+            kengi.get_surface().fill(self.BG_COLOR)
 
             # (this code is rly dirty, but this is meant to be a temporary thing)
             # it shows four large squares, so the user can get a sense of camera+player movements
@@ -103,5 +104,6 @@ class WorldView(EventReceiver):
                 self._ft.render(pl_pos_txt, False, (180, 180, 100)),
                 self._ft.render(cam_pos_txt, False, (180, 180, 100))
             ]
-            enjin.screen.blit(labels[0], (0, 0))
-            enjin.screen.blit(labels[1], (0, 96))
+            scr = kengi.get_surface()
+            scr.blit(labels[0], (0, 0))
+            scr.blit(labels[1], (0, 96))

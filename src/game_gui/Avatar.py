@@ -1,10 +1,11 @@
-from coremon_main import EventReceiver, EngineEvTypes
-import coremon_main as enjin
+import katagames_engine as kengi
 from defs import MyEvTypes
-import pygame
+EngineEvTypes = kengi.event.EngineEvTypes
+pygame = kengi.pygame
+Receiver = kengi.event.EventReceiver
 
 
-class Avatar(EventReceiver):
+class Avatar(Receiver):
 
     def __init__(self, player, camera_model):
         super().__init__()
@@ -26,4 +27,4 @@ class Avatar(EventReceiver):
             self._refresh_player_screenpos()
 
         elif ev.type == EngineEvTypes.PAINT:
-            pygame.draw.rect(enjin.screen, (33, 25, 150), (self.wtd_x, self.wtd_y, 25, 25))
+            pygame.draw.rect(kengi.get_surface(), (33, 25, 150), (self.wtd_x, self.wtd_y, 25, 25))

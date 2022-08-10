@@ -1,6 +1,9 @@
 from math import cos, sin, pi
 
-from matricks.IntegerMatrix import IntegerMatrix
+import katagames_engine as kengi
+
+
+IntegerMatrix = kengi.struct.IntegerMatrix
 
 
 class ElasticTilemap:

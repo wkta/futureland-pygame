@@ -1,9 +1,9 @@
 import glvars
-from coremon_main import CogObject
+import katagames_engine as kengi
 from defs import MyEvTypes
 
 
-class Camera(CogObject):
+class Camera(kengi.event.CogObj):
 
     DIR_EAST, DIR_NORTH, DIR_WEST, DIR_SOUTH = range(4)
 

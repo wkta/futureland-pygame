@@ -1,0 +1,13 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pygame = "*"
+kengi = {editable = true, ref = "master", git = "https://github.com/gaudiatech/kengi.git"}
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
